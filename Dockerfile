@@ -7,6 +7,7 @@ ENV HOME /home/${NB_USER}
 ENV NOTEBOOK_PATH $HOME/notebooks
 ENV PORT 8888
 ENV CLOJUPYTER_PATH $HOME/clojupyter
+ENV ICLOJURE_PATH   $HOME/iclojure
 ENV LEIN_ROOT 1
 
 USER root
@@ -32,14 +33,19 @@ RUN apt update && apt install -yq \
 USER ${NB_USER}
 WORKDIR ${HOME}
 RUN mkdir -p $NOTEBOOK_PATH && \
-    git clone https://github.com/clojupyter/clojupyter.git $CLOJUPYTER_PATH
+    git clone https://github.com/clojupyter/clojupyter.git $CLOJUPYTER_PATH && \
+    git clone https://github.com/HCADatalab/IClojure       $ICLOJURE_PATH 
 
 # Install clpjupyter
 WORKDIR $CLOJUPYTER_PATH
 RUN make && \
     make install && \
     rm -rf $CLOJUPYTER_PATH
-
+WORKDIR $ICLOJURE_PATH
+RUN make && \
+    make install && \
+    rm -rf $ICLOJURE_PATH
+    
 WORKDIR $NOTEBOOK_PATH
 
 EXPOSE $PORT
